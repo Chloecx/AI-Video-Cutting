@@ -12,7 +12,7 @@ for video in videos:
 
     command = (
         f'ffmpeg -y -i "{input_path}" '
-        f'-vf "fps=30,scale=1080:1920" '
+        f'-vf "scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,fps=30" '
         f'-c:v libx264 -preset fast '
         f'-c:a aac '
         f'"{output_path}"'
