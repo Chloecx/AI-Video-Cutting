@@ -1,24 +1,52 @@
 import os
-
-shots = [
-    ("sad_woman.mp4", 4),
-    ("thinking_person.mp4", 3),
-    ("city_night.mp4", 5)
-]
+import json
 
 os.makedirs("clips", exist_ok=True)
 
-for i, (video, duration) in enumerate(shots, start=1):
-    input_file = f"clean/{video}"
-    output_file = f"clips/clip{i}.mp4"
+with open(
+    "storyboard.json",
+    "r",
+    encoding="utf-8"
+) as f:
+    storyboard = json.load(f)
 
-    cmd = (
-        f'ffmpeg -y -i "{input_file}" '
+videos = sorted(
+    [
+        f
+        for f in os.listdir("clean")
+        if f.endswith(".mp4")
+    ]
+)
+
+for index, shot in enumerate(storyboard):
+
+    if index >= len(videos):
+        break
+
+    duration = shot["duration"]
+
+    input_file = os.path.join(
+        "clean",
+        videos[index]
+    )
+
+    output_file = os.path.join(
+        "clips",
+        f"clip{index+1}.mp4"
+    )
+
+    command = (
+        f'ffmpeg -y '
+        f'-i "{input_file}" '
         f'-t {duration} '
         f'-c copy '
         f'"{output_file}"'
     )
 
-    os.system(cmd)
+    print(
+        f"裁切 {videos[index]} -> {duration}秒"
+    )
 
-print("所有镜头裁切完成")
+    os.system(command)
+
+print("全部镜头生成完成")
